@@ -7,7 +7,7 @@ fn to_ctrl_byte(c: char) -> u8 {
 }
 
 fn die(e: std::io::Error) {
-    panic!(e);
+    panic!("{}", e);
 }
 
 fn main() {
