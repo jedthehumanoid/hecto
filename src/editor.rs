@@ -3,7 +3,9 @@ use termion::event::Key;
 use termion::input::TermRead;
 use termion::raw::IntoRawMode;
 
-pub struct Editor {}
+pub struct Editor {
+    should_quit: bool,
+}
 
 impl Editor {
     pub fn run(&self) {
@@ -17,7 +19,7 @@ impl Editor {
     }
 
     pub fn default() -> Self {
-        Self {}
+        Self { should_quit: false }
     }
 
     fn process_keypress(&self) -> Result<(), std::io::Error> {
