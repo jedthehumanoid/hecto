@@ -26,7 +26,7 @@ impl Document {
             rows,
             file_name: Some(filename.to_string()),
             dirty: false,
-            file_type: FileType::default(),
+            file_type: FileType::from(filename),
         })
     }
 
@@ -110,6 +110,7 @@ impl Document {
                 file.write_all(row.as_bytes())?;
                 file.write_all(b"\n")?;
             }
+            self.file_type = FileType::from(file_name);
             self.dirty = false;
         }
         Ok(())
