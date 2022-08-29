@@ -186,7 +186,7 @@ impl Editor {
                     self.quit_times -= 1;
                     return Ok(());
                 }
-                self.should_quit = true
+                self.should_quit = true;
             }
             Key::Ctrl('s') => self.save(),
             Key::Ctrl('f') => self.search(),
@@ -319,7 +319,7 @@ impl Editor {
         let start = self.offset.x;
         let end = self.offset.x.saturating_add(width);
         let row = row.render(start, end);
-        println!("{}\r", row)
+        println!("{}\r", row);
     }
 
     #[allow(clippy::integer_division, clippy::integer_arithmetic)]

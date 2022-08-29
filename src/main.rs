@@ -1,3 +1,10 @@
+#![warn(clippy::pedantic)]
+#![allow(
+    clippy::missing_errors_doc,
+    clippy::must_use_candidate,
+    clippy::struct_excessive_bools
+)]
+
 mod document;
 mod editor;
 mod filetype;

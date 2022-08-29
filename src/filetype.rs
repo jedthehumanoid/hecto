@@ -33,7 +33,11 @@ impl FileType {
     }
 
     pub fn from(file_name: &str) -> Self {
-        if file_name.ends_with(".rs") {
+        let file_name = std::path::Path::new(file_name);
+        if file_name
+            .extension()
+            .map_or(false, |ext| ext.eq_ignore_ascii_case("rs"))
+        {
             return Self {
                 name: String::from("Rust"),
                 hl_opts: HighlightingOptions {

@@ -108,6 +108,8 @@ impl Row {
         self.string = format!("{}{}", self.string, new.string);
         self.len += new.len;
     }
+
+    #[must_use]
     pub fn split(&mut self, at: usize) -> Self {
         let mut row: String = String::new();
         let mut length = 0;
