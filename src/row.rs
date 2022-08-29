@@ -49,7 +49,7 @@ impl Row {
                     result.push_str(&start_highlight[..]);
                 }
                 if c == '\t' {
-                    result.push_str(" ");
+                    result.push(' ');
                 } else {
                     result.push(c);
                 }
@@ -243,7 +243,7 @@ impl Row {
                 }
             }
 
-            if self.highlight_str(index, &word, chars, hl_type) {
+            if self.highlight_str(index, word, chars, hl_type) {
                 return true;
             }
         }
@@ -443,15 +443,15 @@ impl Row {
             index = closing_index;
         }
         while let Some(c) = chars.get(index) {
-            if self.highlight_multiline_comment(&mut index, &opts, *c, &chars) {
+            if self.highlight_multiline_comment(&mut index, opts, *c, &chars) {
                 in_ml_comment = true;
                 continue;
             }
             in_ml_comment = false;
             if self.highlight_char(&mut index, opts, *c, &chars)
                 || self.highlight_comment(&mut index, opts, *c, &chars)
-                || self.highlight_primary_keywords(&mut index, &opts, &chars)
-                || self.highlight_secondary_keywords(&mut index, &opts, &chars)
+                || self.highlight_primary_keywords(&mut index, opts, &chars)
+                || self.highlight_secondary_keywords(&mut index, opts, &chars)
                 || self.highlight_string(&mut index, opts, *c, &chars)
                 || self.highlight_number(&mut index, opts, *c, &chars)
             {

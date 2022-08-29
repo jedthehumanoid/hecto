@@ -46,6 +46,7 @@ impl Terminal {
         io::stdout().flush()
     }
 
+    ///
     pub fn read_key() -> Result<Key, std::io::Error> {
         loop {
             if let Some(key) = io::stdin().lock().keys().next() {

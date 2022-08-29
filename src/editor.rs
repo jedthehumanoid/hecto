@@ -12,7 +12,7 @@ const STATUS_BG_COLOR: color::Rgb = color::Rgb(239, 239, 239);
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const QUIT_TIMES: u8 = 3;
 
-#[derive(PartialEq, Copy, Clone)]
+#[derive(PartialEq, Eq, Copy, Clone)]
 pub enum SearchDirection {
     Forward,
     Backward,
@@ -155,7 +155,7 @@ impl Editor {
                     if let Some(position) =
                         editor
                             .document
-                            .find(&query, &editor.cursor_position, direction)
+                            .find(query, &editor.cursor_position, direction)
                     {
                         editor.cursor_position = position;
                         editor.scroll();
