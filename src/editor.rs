@@ -137,7 +137,7 @@ impl Editor {
 
     fn quit(&mut self) {
         if self.document.is_dirty() {
-            self.prompt("Save unsaved changes? ", |editor, key, query| match key {
+            self.prompt("Save unsaved changes? ", |editor, key, _| match key {
                 Key::Char('y') => {
                     editor.save();
                     editor.should_quit = true;
