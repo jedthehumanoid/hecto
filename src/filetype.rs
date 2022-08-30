@@ -24,14 +24,17 @@ impl Default for FileType {
 }
 
 impl FileType {
+    #[must_use]
     pub fn name(&self) -> String {
         self.name.clone()
     }
 
+    #[must_use]
     pub fn highlighting_options(&self) -> &HighlightingOptions {
         &self.hl_opts
     }
 
+    #[must_use]
     pub fn from(file_name: &str) -> Self {
         let file_name = std::path::Path::new(file_name);
         if file_name
@@ -123,24 +126,37 @@ impl FileType {
 }
 
 impl HighlightingOptions {
+    #[must_use]
     pub fn numbers(&self) -> bool {
         self.numbers
     }
+
+    #[must_use]
     pub fn strings(&self) -> bool {
         self.strings
     }
+
+    #[must_use]
     pub fn characters(&self) -> bool {
         self.characters
     }
+
+    #[must_use]
     pub fn comments(&self) -> bool {
         self.comments
     }
+
+    #[must_use]
     pub fn primary_keywords(&self) -> &Vec<String> {
         &self.primary_keywords
     }
+
+    #[must_use]
     pub fn secondary_keywords(&self) -> &Vec<String> {
         &self.secondary_keywords
     }
+
+    #[must_use]
     pub fn multiline_comments(&self) -> bool {
         self.multiline_comments
     }

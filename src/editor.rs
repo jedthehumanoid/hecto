@@ -143,8 +143,9 @@ impl Editor {
                     editor.should_quit = true;
                 }
                 Key::Char('n') => editor.should_quit = true,
-                _ => {},
-            }).unwrap_or(None);
+                _ => {}
+            })
+            .unwrap_or(None);
         }
     }
 
@@ -217,7 +218,7 @@ impl Editor {
 
     fn insert(&mut self, key: char) {
         self.document.insert(&self.cursor_position, key);
-        self.move_cursor(Key::Right); 
+        self.move_cursor(Key::Right);
     }
 
     fn backspace(&mut self) {

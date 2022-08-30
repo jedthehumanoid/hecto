@@ -29,18 +29,22 @@ impl Document {
         })
     }
 
+    #[must_use]
     pub fn file_type(&self) -> String {
         self.file_type.name()
     }
 
+    #[must_use]
     pub fn row(&self, index: usize) -> Option<&Row> {
         self.rows.get(index)
     }
 
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.rows.is_empty()
     }
 
+    #[must_use]
     pub fn len(&self) -> usize {
         self.rows.len()
     }
@@ -115,10 +119,14 @@ impl Document {
         }
         Ok(())
     }
+
+    #[must_use]
     pub fn is_dirty(&self) -> bool {
         self.dirty
     }
+
     #[allow(clippy::indexing_slicing)]
+    #[must_use]
     pub fn find(&self, query: &str, at: &Position, direction: SearchDirection) -> Option<Position> {
         if at.y >= self.rows.len() {
             return None;
