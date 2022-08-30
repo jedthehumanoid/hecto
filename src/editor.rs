@@ -193,17 +193,9 @@ impl Editor {
             Key::Ctrl('q') => self.quit(),
             Key::Ctrl('s') => self.save(),
             Key::Ctrl('f') => self.search(),
-            Key::Char(c) => {
-                self.document.insert(&self.cursor_position, c);
-                self.move_cursor(Key::Right);
-            }
+            Key::Char(c) => self.insert(c),
             Key::Delete => self.document.delete(&self.cursor_position),
-            Key::Backspace => {
-                if self.cursor_position.x > 0 || self.cursor_position.y > 0 {
-                    self.move_cursor(Key::Left);
-                    self.document.delete(&self.cursor_position);
-                }
-            }
+            Key::Backspace => self.backspace(),
             Key::Up
             | Key::Down
             | Key::Left
@@ -221,6 +213,18 @@ impl Editor {
             self.status_message = StatusMessage::from(String::new());
         }
         Ok(())
+    }
+
+    fn insert(&mut self, key: char) {
+        self.document.insert(&self.cursor_position, key);
+        self.move_cursor(Key::Right); 
+    }
+
+    fn backspace(&mut self) {
+        if self.cursor_position.x > 0 || self.cursor_position.y > 0 {
+            self.move_cursor(Key::Left);
+            self.document.delete(&self.cursor_position);
+        }
     }
 
     fn scroll(&mut self) {
