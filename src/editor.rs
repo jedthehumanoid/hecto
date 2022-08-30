@@ -135,6 +135,19 @@ impl Editor {
         }
     }
 
+    fn quit(&mut self) {
+        if self.document.is_dirty() {
+            self.prompt("Save unsaved changes? ", |editor, key, query| match key {
+                Key::Char('y') => {
+                    editor.save();
+                    editor.should_quit = true;
+                }
+                Key::Char('n') => editor.should_quit = true,
+                _ => {},
+            }).unwrap_or(None);
+        }
+    }
+
     fn search(&mut self) {
         let old_position = self.cursor_position.clone();
         let mut direction = SearchDirection::Forward;
@@ -177,17 +190,7 @@ impl Editor {
     fn process_keypress(&mut self) -> Result<(), std::io::Error> {
         let pressed_key = Terminal::read_key()?;
         match pressed_key {
-            Key::Ctrl('q') => {
-                if self.quit_times > 0 && self.document.is_dirty() {
-                    self.status_message = StatusMessage::from(format!(
-                        "WARNING! File has unsaved changes. Press Ctrl-Q {} more times to quit.",
-                        self.quit_times
-                    ));
-                    self.quit_times -= 1;
-                    return Ok(());
-                }
-                self.should_quit = true;
-            }
+            Key::Ctrl('q') => self.quit(),
             Key::Ctrl('s') => self.save(),
             Key::Ctrl('f') => self.search(),
             Key::Char(c) => {
@@ -393,6 +396,9 @@ impl Editor {
     {
         let mut result = String::new();
         loop {
+            if self.should_quit {
+                break;
+            }
             self.status_message = StatusMessage::from(format!("{}{}", prompt, result));
             self.refresh_screen()?;
             let key = Terminal::read_key()?;
