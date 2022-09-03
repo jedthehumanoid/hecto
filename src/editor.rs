@@ -146,6 +146,8 @@ impl Editor {
                 _ => {}
             })
             .unwrap_or(None);
+        } else {
+            self.should_quit = true;
         }
     }
 
