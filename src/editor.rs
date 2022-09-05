@@ -1,7 +1,6 @@
 use crate::Document;
 use crate::Row;
 use crate::Terminal;
-use std::env;
 use std::time::Duration;
 use std::time::Instant;
 use termion::color;
@@ -61,11 +60,10 @@ impl Editor {
         }
     }
 
-    pub fn default() -> Self {
-        let args: Vec<String> = env::args().collect();
+    pub fn default(file_name: Option<&String>) -> Self {
         let mut initial_status =
             String::from("HELP: Ctrl-F = find | Ctrl-S = save | Ctrl-Q = quit");
-        let document = if let Some(file_name) = args.get(1) {
+        let document = if let Some(file_name) = file_name {
             let doc = Document::open(file_name);
             if let Ok(doc) = doc {
                 doc

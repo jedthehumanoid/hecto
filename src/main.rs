@@ -14,8 +14,10 @@ pub use editor::SearchDirection;
 pub use filetype::FileType;
 pub use filetype::HighlightingOptions;
 pub use row::Row;
+use std::env;
 pub use terminal::Terminal;
 
 fn main() {
-    Editor::default().run();
+    let args: Vec<String> = env::args().collect();
+    Editor::default(args.get(1)).run();
 }
