@@ -10,7 +10,6 @@ use termion::event::Key;
 const STATUS_FG_COLOR: color::Rgb = color::Rgb(63, 63, 63);
 const STATUS_BG_COLOR: color::Rgb = color::Rgb(239, 239, 239);
 const VERSION: &str = env!("CARGO_PKG_VERSION");
-const QUIT_TIMES: u8 = 3;
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub enum SearchDirection {
@@ -44,7 +43,6 @@ pub struct Editor {
     offset: Position,
     document: Document,
     status_message: StatusMessage,
-    quit_times: u8,
     highlighted_word: Option<String>,
 }
 
@@ -86,7 +84,6 @@ impl Editor {
             cursor_position: Position::default(),
             offset: Position::default(),
             status_message: StatusMessage::from(initial_status),
-            quit_times: QUIT_TIMES,
             highlighted_word: None,
         }
     }
@@ -211,10 +208,6 @@ impl Editor {
         }
 
         self.scroll();
-        if self.quit_times < QUIT_TIMES {
-            self.quit_times = QUIT_TIMES;
-            self.status_message = StatusMessage::from(String::new());
-        }
         Ok(())
     }
 
