@@ -7,6 +7,7 @@ mod filetype;
 mod highlighting;
 mod row;
 mod terminal;
+mod ansi;
 
 pub use document::Document;
 pub use editor::Color;

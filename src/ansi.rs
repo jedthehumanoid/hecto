@@ -23,9 +23,20 @@ pub struct Position {
 }
 
 pub struct Window {
-    position: Position
-    size: Size
-    cursor_position: Position
+    position: Position,
+    size: Size,
+    cursor_position: Position,
+}
+
+impl Default for Window {
+    fn default() -> Self {
+        let size = termion::terminal_size().unwrap();
+        Self {
+            position: Position{x: 0,y: 0},
+            size: Size{width: size.0, height: size.1},
+            cursor_position: Position{x: 0, y:0},
+        }
+    }
 }
 
 impl Window {
@@ -35,8 +46,8 @@ fn println() {
 fn print() {
 
 }
-fn clear() {
-
+fn clear(&self) {
+    
 }
 fn fg_color() {
 
@@ -44,4 +55,15 @@ fn fg_color() {
 fn bg_color() {
 
 }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_works() {
+        let win = Window::default();
+        win.clear();
+    }
 }
