@@ -7,4 +7,8 @@ edition = "2021"
 
 [dependencies]
 termion = "1"
+tree-sitter = "0.20.9"
 unicode-segmentation = "1"
+
+[build-dependencies]
+cc="1.0"

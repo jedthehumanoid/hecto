@@ -204,7 +204,7 @@ impl Row {
         }
     }
 
-    fn highlight_str(
+    fn highlight_keyword(
         &mut self,
         index: &mut usize,
         substring: &str,
@@ -252,37 +252,11 @@ impl Row {
                 }
             }
 
-            if self.highlight_str(index, word, chars, hl_type) {
+            if self.highlight_keyword(index, word, chars, hl_type) {
                 return true;
             }
         }
         false
-    }
-    fn highlight_primary_keywords(
-        &mut self,
-        index: &mut usize,
-        opts: &HighlightingOptions,
-        chars: &[char],
-    ) -> bool {
-        self.highlight_keywords(
-            index,
-            chars,
-            opts.primary_keywords(),
-            highlighting::Type::PrimaryKeywords,
-        )
-    }
-    fn highlight_secondary_keywords(
-        &mut self,
-        index: &mut usize,
-        opts: &HighlightingOptions,
-        chars: &[char],
-    ) -> bool {
-        self.highlight_keywords(
-            index,
-            chars,
-            opts.secondary_keywords(),
-            highlighting::Type::SecondaryKeywords,
-        )
     }
 
     fn highlight_char(
@@ -371,10 +345,12 @@ impl Row {
         chars: &[char],
     ) -> bool {
         if opts.strings() && c == '"' {
+            eprint!("{}", c);
             loop {
                 self.highlighting.push(highlighting::Type::String);
                 *index += 1;
                 if let Some(next_char) = chars.get(*index) {
+                    eprint!("{}", next_char);
                     if *next_char == '"' {
                         break;
                     }
@@ -384,6 +360,7 @@ impl Row {
             }
             self.highlighting.push(highlighting::Type::String);
             *index += 1;
+            eprintln!("{:?}", self.highlighting);
             return true;
         }
         false
@@ -418,6 +395,8 @@ impl Row {
         }
         false
     }
+
+    /// Returns true if in multiline comment last time
     #[allow(clippy::indexing_slicing, clippy::integer_arithmetic)]
     pub fn highlight(
         &mut self,
@@ -459,8 +438,18 @@ impl Row {
             in_ml_comment = false;
             if self.highlight_char(&mut index, opts, *c, &chars)
                 || self.highlight_comment(&mut index, opts, *c, &chars)
-                || self.highlight_primary_keywords(&mut index, opts, &chars)
-                || self.highlight_secondary_keywords(&mut index, opts, &chars)
+                || self.highlight_keywords(
+                    &mut index,
+                    &chars,
+                    opts.primary_keywords(),
+                    highlighting::Type::PrimaryKeywords,
+                )
+                || self.highlight_keywords(
+                    &mut index,
+                    &chars,
+                    opts.secondary_keywords(),
+                    highlighting::Type::SecondaryKeywords,
+                )
                 || self.highlight_string(&mut index, opts, *c, &chars)
                 || self.highlight_number(&mut index, opts, *c, &chars)
             {

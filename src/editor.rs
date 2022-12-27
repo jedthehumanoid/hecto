@@ -8,7 +8,6 @@ use termion::event::Key;
 
 const STATUS_FG_COLOR: color::Rgb = color::Rgb(63, 63, 63);
 const STATUS_BG_COLOR: color::Rgb = color::Rgb(239, 239, 239);
-const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub enum SearchDirection {
@@ -34,6 +33,8 @@ impl StatusMessage {
         }
     }
 }
+
+pub struct Color(pub u8, pub u8, pub u8);
 
 pub struct Editor {
     should_quit: bool,
@@ -303,18 +304,6 @@ impl Editor {
         self.cursor_position = Position { x, y }
     }
 
-    fn draw_welcome_message(&self) {
-        let mut welcome_message = format!("Hecto editor -- version {}", VERSION);
-        let width = self.terminal.size().width as usize;
-        let len = welcome_message.len();
-        #[allow(clippy::integer_arithmetic, clippy::integer_division)]
-        let padding = width.saturating_sub(len) / 2;
-        let spaces = " ".repeat(padding.saturating_sub(1));
-        welcome_message = format!("~{}{}", spaces, welcome_message);
-        welcome_message.truncate(width);
-        println!("{}\r", welcome_message);
-    }
-
     pub fn draw_row(&self, row: &Row) {
         let width = self.terminal.size().width as usize;
         let start = self.offset.x;
@@ -333,8 +322,6 @@ impl Editor {
                 .row(self.offset.y.saturating_add(terminal_row as usize))
             {
                 self.draw_row(row);
-            } else if self.document.is_empty() && terminal_row == height / 3 {
-                self.draw_welcome_message();
             } else {
                 println!("~\r");
             }

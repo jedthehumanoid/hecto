@@ -1,6 +1,8 @@
+//! Highlighting types and colors for the types.
+
 use termion::color;
 
-#[derive(PartialEq, Eq, Clone, Copy)]
+#[derive(PartialEq, Eq, Clone, Copy, Debug)]
 pub enum Type {
     None,
     Number,
