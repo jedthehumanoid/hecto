@@ -7,8 +7,8 @@ use std::time::Instant;
 use termion::color;
 use termion::event::Key;
 
-const STATUS_FG_COLOR: color::Rgb = color::Rgb(63, 63, 63);
-const STATUS_BG_COLOR: color::Rgb = color::Rgb(239, 239, 239);
+const STATUS_FG_COLOR: color::Rgb = color::Rgb(239, 239, 239);
+const STATUS_BG_COLOR: color::Rgb = color::Rgb(64, 64, 64);
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub enum SearchDirection {
@@ -326,7 +326,7 @@ impl Editor {
             {
                 self.draw_row(row);
             } else {
-                println!("~\r");
+                println!("\r");
             }
         }
     }

@@ -32,6 +32,7 @@ impl Drop for Terminal {
         print!("{}", termion::cursor::Goto(1, 1));
     }
 }
+
 impl Terminal {
     /// Default constructor
     pub fn default() -> Result<Self, std::io::Error> {
@@ -39,6 +40,7 @@ impl Terminal {
         Ok(Self {
             size: Size {
                 width: size.0,
+                // Remove 2 rows for status and message bar
                 height: size.1.saturating_sub(2),
             },
             _stdout: stdout().into_raw_mode()?,
