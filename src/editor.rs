@@ -1,4 +1,5 @@
 use crate::Document;
+use crate::FileType;
 use crate::Row;
 use crate::Terminal;
 use std::time::Duration;
@@ -49,12 +50,14 @@ pub struct Editor {
 impl Editor {
     pub fn run(&mut self) {
         loop {
-            if let Err(error) = self.refresh_screen() {
-                panic!("{}", error);
-            }
             if self.should_quit {
                 break;
             }
+
+            if let Err(error) = self.refresh_screen() {
+                panic!("{}", error);
+            }
+
             if let Err(error) = self.process_keypress() {
                 panic!("{}", error);
             }
@@ -69,8 +72,11 @@ impl Editor {
             if let Ok(doc) = doc {
                 doc
             } else {
-                initial_status = format!("ERR: Could not open file: {}", file_name);
-                Document::default()
+                initial_status = format!("Created new file: {}", file_name);
+                let mut doc = Document::default();
+                doc.file_name = Some(file_name.to_string());
+                doc.file_type = FileType::from(file_name);
+                doc
             }
         } else {
             Document::default()

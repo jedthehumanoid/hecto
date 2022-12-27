@@ -10,7 +10,7 @@ pub struct Document {
     rows: Vec<Row>,
     pub file_name: Option<String>,
     dirty: bool,
-    file_type: FileType,
+    pub file_type: FileType,
 }
 
 impl Document {
