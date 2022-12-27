@@ -60,8 +60,7 @@ impl FileType {
         let mut parser = tree_sitter::Parser::new();
         parser.set_language(self.ts_language?).ok()?;
 
-        parser
-            .parse(contents, None)
+        parser.parse(contents, None)
     }
 
     /// Return highlighting options of filetype

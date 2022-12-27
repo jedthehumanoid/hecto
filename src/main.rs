@@ -9,6 +9,7 @@ mod row;
 mod terminal;
 
 pub use document::Document;
+pub use editor::Color;
 use editor::Editor;
 pub use editor::Position;
 pub use editor::SearchDirection;
@@ -17,7 +18,6 @@ pub use filetype::HighlightingOptions;
 pub use row::Row;
 use std::env;
 pub use terminal::Terminal;
-pub use editor::Color;
 
 fn main() {
     let args: Vec<String> = env::args().collect();

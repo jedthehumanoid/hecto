@@ -26,6 +26,12 @@ pub struct Terminal {
     _stdout: RawTerminal<std::io::Stdout>,
 }
 
+impl Drop for Terminal {
+    fn drop(&mut self) {
+        print!("{}", termion::clear::All);
+        print!("{}", termion::cursor::Goto(1, 1));
+    }
+}
 impl Terminal {
     /// Default constructor
     pub fn default() -> Result<Self, std::io::Error> {
@@ -43,11 +49,6 @@ impl Terminal {
     #[must_use]
     pub fn size(&self) -> &Size {
         &self.size
-    }
-
-    /// Clear entire screen
-    pub fn clear_screen() {
-        print!("{}", termion::clear::All);
     }
 
     /// Set cursor position

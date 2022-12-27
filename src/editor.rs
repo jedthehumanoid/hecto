@@ -50,13 +50,13 @@ impl Editor {
     pub fn run(&mut self) {
         loop {
             if let Err(error) = self.refresh_screen() {
-                die(&error);
+                panic!("{}", error);
             }
             if self.should_quit {
                 break;
             }
             if let Err(error) = self.process_keypress() {
-                die(&error);
+                panic!("{}", error);
             }
         }
     }
@@ -90,26 +90,23 @@ impl Editor {
     fn refresh_screen(&mut self) -> Result<(), std::io::Error> {
         Terminal::cursor_hide();
         Terminal::cursor_position(&Position::default());
-        if self.should_quit {
-            Terminal::clear_screen();
-            println!("Goodbye.\r");
-        } else {
-            self.document.highlight(
-                &self.highlighted_word,
-                Some(
-                    self.offset
-                        .y
-                        .saturating_add(self.terminal.size().height as usize),
-                ),
-            );
-            self.draw_rows();
-            self.draw_status_bar();
-            self.draw_message_bar();
-            Terminal::cursor_position(&Position {
-                x: self.cursor_position.x.saturating_sub(self.offset.x),
-                y: self.cursor_position.y.saturating_sub(self.offset.y),
-            });
-        }
+
+        self.document.highlight(
+            &self.highlighted_word,
+            Some(
+                self.offset
+                    .y
+                    .saturating_add(self.terminal.size().height as usize),
+            ),
+        );
+        self.draw_rows();
+        self.draw_status_bar();
+        self.draw_message_bar();
+        Terminal::cursor_position(&Position {
+            x: self.cursor_position.x.saturating_sub(self.offset.x),
+            y: self.cursor_position.y.saturating_sub(self.offset.y),
+        });
+
         Terminal::cursor_show();
         Terminal::flush()
     }
@@ -409,9 +406,4 @@ impl Editor {
         }
         Ok(Some(result))
     }
-}
-
-fn die(e: &std::io::Error) {
-    Terminal::clear_screen();
-    panic!("{}", e);
 }
