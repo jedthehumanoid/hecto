@@ -118,10 +118,11 @@ impl Window {
             );
             print!("{}", filler);
         }
-        print!(
-            "{}",
-            termion::cursor::Goto(self.position.x, self.position.y)
-        );
+        self.cursor_position = Position {
+            x: self.position.x,
+            y: self.position.y,
+        };
+
         io::stdout().flush();
     }
     fn fg_color() {}
@@ -162,8 +163,9 @@ mod tests {
         win.background_color = format!("{}", color::Bg(color::Rgb(40, 150, 90)));
         win.clear();
 
-        println!("hello world");
-
+        win.println("hello world");
+        win.println("backstreets back");
+        io::stdout().flush();
         wait();
         print!("{}", color::Bg(color::Reset));
         print!("{}", termion::clear::All);
