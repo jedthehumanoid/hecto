@@ -1,13 +1,13 @@
 #![warn(clippy::pedantic)]
 #![allow(clippy::missing_errors_doc, clippy::struct_excessive_bools)]
 
+mod ansi;
 mod document;
 mod editor;
 mod filetype;
 mod highlighting;
 mod row;
 mod terminal;
-mod ansi;
 
 pub use document::Document;
 pub use editor::Color;

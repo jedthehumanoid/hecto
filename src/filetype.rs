@@ -205,3 +205,53 @@ impl HighlightingOptions {
         self.multiline_comments
     }
 }
+
+/// Print tree starting from node
+pub fn pretty_print(node: tree_sitter::Node, show_anonymous: bool) -> String {
+    let mut cursor = node.walk();
+    let mut indent = String::new();
+    let mut ret = String::new();
+    loop {
+        if cursor.node().is_named() || show_anonymous {
+            ret += &format!("{}{}\n", indent, cursor_pretty(&cursor));
+        }
+
+        if cursor.goto_first_child() {
+            indent += "  ";
+            continue;
+        }
+        if cursor.goto_next_sibling() {
+            continue;
+        }
+
+        // Retrace upwards until additional siblings are avaliable
+        loop {
+            if !cursor.goto_parent() {
+                return ret;
+            }
+            indent = indent[0..indent.len() - 2].to_string();
+
+            if cursor.goto_next_sibling() {
+                break;
+            }
+        }
+    }
+    ret
+}
+
+/// Pretty print cursor node tree
+fn cursor_pretty(cursor: &tree_sitter::TreeCursor) -> String {
+    let field_name = match cursor.field_name() {
+        Some(name) => String::from(name) + ": ",
+        None => String::from(""),
+    };
+    format!(
+        "{}{} [{}, {}] - [{}, {}]",
+        field_name,
+        cursor.node().kind(),
+        cursor.node().start_position().row,
+        cursor.node().start_position().column,
+        cursor.node().end_position().row,
+        cursor.node().end_position().column,
+    )
+}

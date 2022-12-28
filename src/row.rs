@@ -7,7 +7,7 @@ use unicode_segmentation::UnicodeSegmentation;
 
 #[derive(Default)]
 pub struct Row {
-    string: String,
+    pub string: String,
     highlighting: Vec<highlighting::Type>,
     pub is_highlighted: bool,
     len: usize,

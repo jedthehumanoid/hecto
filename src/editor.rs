@@ -96,6 +96,7 @@ impl Editor {
     fn refresh_screen(&mut self) -> Result<(), std::io::Error> {
         Terminal::cursor_hide();
         Terminal::cursor_position(&Position::default());
+        let start = Instant::now();
 
         self.document.highlight(
             &self.highlighted_word,
@@ -105,6 +106,14 @@ impl Editor {
                     .saturating_add(self.terminal.size().height as usize),
             ),
         );
+        let duration = start.elapsed();
+        eprintln!("highlight: {:?}", duration);
+
+        let start = Instant::now();
+        self.document.highlight_ts();
+        let duration = start.elapsed();
+        eprintln!("highlight TS: {:?}", duration);
+
         self.draw_rows();
         self.draw_status_bar();
         self.draw_message_bar();
