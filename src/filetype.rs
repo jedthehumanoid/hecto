@@ -236,7 +236,6 @@ pub fn pretty_print(node: tree_sitter::Node, show_anonymous: bool) -> String {
             }
         }
     }
-    ret
 }
 
 /// Pretty print cursor node tree

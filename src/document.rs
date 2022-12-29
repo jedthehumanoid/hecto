@@ -164,7 +164,6 @@ impl Document {
     }
     pub fn highlight(&mut self, word: &Option<String>, until: Option<usize>) {
         let mut start_with_comment = false;
-        eprintln!("until: {:?}", until);
         let until = if let Some(until) = until {
             if until.saturating_add(1) < self.rows.len() {
                 until.saturating_add(1)
@@ -190,6 +189,22 @@ impl Document {
             contents = contents + &row.string + "\n";
         }
         let tree = self.file_type.parse(&contents).unwrap();
-        eprintln!("{}", crate::filetype::pretty_print(tree.root_node(), false));
+
+        let mut start = 0;
+        for row in &self.rows {
+            let end = start + row.len() + 1;
+            //        eprintln!("{} [{} -> {}]", &contents[start..end], start, end);
+            //       let node = tree.root_node().descendant_for_byte_range(start, start);
+            //       eprintln!("{}\n", crate::filetype::pretty_print(node.unwrap(), true));
+            //      eprintln!("{:?}\n", node.unwrap().byte_range());
+
+            start = end;
+        }
+
+        // eprintln!("{}", row.string);
+        // eprintln!(
+        //     "{}\n",
+        //     crate::filetype::pretty_print(tree.root_node(), false)
+        // );
     }
 }

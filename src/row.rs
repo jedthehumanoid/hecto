@@ -204,198 +204,6 @@ impl Row {
         }
     }
 
-    fn highlight_keyword(
-        &mut self,
-        index: &mut usize,
-        substring: &str,
-        chars: &[char],
-        hl_type: highlighting::Type,
-    ) -> bool {
-        if substring.is_empty() {
-            return false;
-        }
-        for (substring_index, c) in substring.chars().enumerate() {
-            if let Some(next_char) = chars.get(index.saturating_add(substring_index)) {
-                if *next_char != c {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        }
-        for _ in 0..substring.len() {
-            self.highlighting.push(hl_type);
-            *index += 1;
-        }
-        true
-    }
-    fn highlight_keywords(
-        &mut self,
-        index: &mut usize,
-        chars: &[char],
-        keywords: &[String],
-        hl_type: highlighting::Type,
-    ) -> bool {
-        if *index > 0 {
-            #[allow(clippy::indexing_slicing, clippy::integer_arithmetic)]
-            let prev_char = chars[*index - 1];
-            if !is_separator(prev_char) {
-                return false;
-            }
-        }
-        for word in keywords {
-            if *index < chars.len().saturating_sub(word.len()) {
-                #[allow(clippy::indexing_slicing, clippy::integer_arithmetic)]
-                let next_char = chars[*index + word.len()];
-                if !is_separator(next_char) {
-                    continue;
-                }
-            }
-
-            if self.highlight_keyword(index, word, chars, hl_type) {
-                return true;
-            }
-        }
-        false
-    }
-
-    fn highlight_char(
-        &mut self,
-        index: &mut usize,
-        opts: &HighlightingOptions,
-        c: char,
-        chars: &[char],
-    ) -> bool {
-        if opts.characters() && c == '\'' {
-            if let Some(next_char) = chars.get(index.saturating_add(1)) {
-                let closing_index = if *next_char == '\\' {
-                    index.saturating_add(3)
-                } else {
-                    index.saturating_add(2)
-                };
-                if let Some(closing_char) = chars.get(closing_index) {
-                    if *closing_char == '\'' {
-                        for _ in 0..=closing_index.saturating_sub(*index) {
-                            self.highlighting.push(highlighting::Type::Character);
-                            *index += 1;
-                        }
-                        return true;
-                    }
-                }
-            }
-        }
-        false
-    }
-
-    fn highlight_comment(
-        &mut self,
-        index: &mut usize,
-        opts: &HighlightingOptions,
-        c: char,
-        chars: &[char],
-    ) -> bool {
-        if opts.comments() && c == '/' && *index < chars.len() {
-            if let Some(next_char) = chars.get(index.saturating_add(1)) {
-                if *next_char == '/' {
-                    for _ in *index..chars.len() {
-                        self.highlighting.push(highlighting::Type::Comment);
-                        *index += 1;
-                    }
-
-                    return true;
-                }
-            };
-        }
-        false
-    }
-
-    #[allow(clippy::indexing_slicing, clippy::integer_arithmetic)]
-    fn highlight_multiline_comment(
-        &mut self,
-        index: &mut usize,
-        opts: &HighlightingOptions,
-        c: char,
-        chars: &[char],
-    ) -> bool {
-        if opts.comments() && c == '/' && *index < chars.len() {
-            if let Some(next_char) = chars.get(index.saturating_add(1)) {
-                if *next_char == '*' {
-                    let closing_index =
-                        if let Some(closing_index) = self.string[*index + 2..].find("*/") {
-                            *index + closing_index + 4
-                        } else {
-                            chars.len()
-                        };
-                    for _ in *index..closing_index {
-                        self.highlighting.push(highlighting::Type::MultilineComment);
-                        *index += 1;
-                    }
-                    return true;
-                }
-            };
-        }
-        false
-    }
-
-    fn highlight_string(
-        &mut self,
-        index: &mut usize,
-        opts: &HighlightingOptions,
-        c: char,
-        chars: &[char],
-    ) -> bool {
-        if opts.strings() && c == '"' {
-            eprint!("{}", c);
-            loop {
-                self.highlighting.push(highlighting::Type::String);
-                *index += 1;
-                if let Some(next_char) = chars.get(*index) {
-                    eprint!("{}", next_char);
-                    if *next_char == '"' {
-                        break;
-                    }
-                } else {
-                    break;
-                }
-            }
-            self.highlighting.push(highlighting::Type::String);
-            *index += 1;
-            eprintln!("{:?}", self.highlighting);
-            return true;
-        }
-        false
-    }
-    fn highlight_number(
-        &mut self,
-        index: &mut usize,
-        opts: &HighlightingOptions,
-        c: char,
-        chars: &[char],
-    ) -> bool {
-        if opts.numbers() && c.is_ascii_digit() {
-            if *index > 0 {
-                #[allow(clippy::indexing_slicing, clippy::integer_arithmetic)]
-                let prev_char = chars[*index - 1];
-                if !is_separator(prev_char) {
-                    return false;
-                }
-            }
-            loop {
-                self.highlighting.push(highlighting::Type::Number);
-                *index += 1;
-                if let Some(next_char) = chars.get(*index) {
-                    if *next_char != '.' && !next_char.is_ascii_digit() {
-                        break;
-                    }
-                } else {
-                    break;
-                }
-            }
-            return true;
-        }
-        false
-    }
-
     /// Returns true if in multiline comment last time
     #[allow(clippy::indexing_slicing, clippy::integer_arithmetic)]
     pub fn highlight(
@@ -404,7 +212,7 @@ impl Row {
         word: &Option<String>,
         start_with_comment: bool,
     ) -> bool {
-        let chars: Vec<char> = self.string.chars().collect();
+        // Shortcircuit if already highlighted and no search word
         if self.is_highlighted && word.is_none() {
             if let Some(hl_type) = self.highlighting.last() {
                 if *hl_type == highlighting::Type::MultilineComment
@@ -416,6 +224,8 @@ impl Row {
             }
             return false;
         }
+
+        let chars: Vec<char> = self.string.chars().collect();
         self.highlighting = Vec::new();
         let mut index = 0;
         let mut in_ml_comment = start_with_comment;
@@ -430,28 +240,35 @@ impl Row {
             }
             index = closing_index;
         }
-        while let Some(c) = chars.get(index) {
-            if self.highlight_multiline_comment(&mut index, opts, *c, &chars) {
+        while chars.get(index).is_some() {
+            if opts.multiline_comments()
+                && highlighting::multiline_comment(&mut self.highlighting, &mut index, &chars)
+            {
                 in_ml_comment = true;
                 continue;
             }
             in_ml_comment = false;
-            if self.highlight_char(&mut index, opts, *c, &chars)
-                || self.highlight_comment(&mut index, opts, *c, &chars)
-                || self.highlight_keywords(
+            if (opts.characters() && highlighting::char(&mut self.highlighting, &mut index, &chars))
+                || (opts.comments()
+                    && highlighting::comment(&mut self.highlighting, &mut index, &chars))
+                || highlighting::keywords(
+                    &mut self.highlighting,
                     &mut index,
                     &chars,
                     opts.primary_keywords(),
                     highlighting::Type::PrimaryKeywords,
                 )
-                || self.highlight_keywords(
+                || highlighting::keywords(
+                    &mut self.highlighting,
                     &mut index,
                     &chars,
                     opts.secondary_keywords(),
                     highlighting::Type::SecondaryKeywords,
                 )
-                || self.highlight_string(&mut index, opts, *c, &chars)
-                || self.highlight_number(&mut index, opts, *c, &chars)
+                || (opts.strings()
+                    && highlighting::string(&mut self.highlighting, &mut index, &chars))
+                || (opts.numbers()
+                    && highlighting::number(&mut self.highlighting, &mut index, &chars))
             {
                 continue;
             }
@@ -465,7 +282,4 @@ impl Row {
         self.is_highlighted = true;
         false
     }
-}
-fn is_separator(c: char) -> bool {
-    c.is_ascii_punctuation() || c.is_ascii_whitespace()
 }

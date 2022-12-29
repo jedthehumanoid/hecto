@@ -20,6 +20,8 @@ struct Window {
     size: Size,
     cursor_position: Position,
     background_color: String,
+
+    #[allow(dead_code)]
     foreground_color: String,
 }
 
@@ -40,14 +42,16 @@ impl Default for Window {
 }
 
 impl Window {
+    #[allow(dead_code)]
     fn new(position: Position, size: Size) -> Self {
         Self {
-            position: position,
-            size: size,
+            position,
+            size,
             ..Default::default()
         }
     }
 
+    #[allow(dead_code)]
     fn print(&mut self, s: &str) {
         let Position { mut x, mut y } = self.cursor_position;
         print!("{}", self.background_color);
@@ -67,6 +71,7 @@ impl Window {
         self.cursor_position = Position { x, y };
     }
 
+    #[allow(dead_code)]
     fn println(&mut self, s: &str) {
         self.print(s);
         self.cursor_position.x = self.position.x;
@@ -74,6 +79,7 @@ impl Window {
         io::stdout().flush().unwrap();
     }
 
+    #[allow(dead_code)]
     fn clear(&mut self) {
         let Position { x, y } = self.position;
         self.cursor_position = Position { x, y };
